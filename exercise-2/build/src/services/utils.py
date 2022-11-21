@@ -1,6 +1,7 @@
 import pandas
 import logging
 import numpy as np
+from datetime import datetime
 
 
 def load_df_from_csv(file_path):
@@ -14,8 +15,10 @@ def load_df_from_csv(file_path):
         raise RuntimeError(f"Error loading csv file {file_path}, {e}")
 
 
-def filter_datasets(machine, arepas, br_df, cm_df, fi_df):
+def filter_datasets(start_timestamp, end_timestamp, machine, arepas, br_df, cm_df, fi_df):
     """
+    :param start_timestamp: timestamp inserted by the user to filter data
+    :param end_timestamp: timestamp inserted by the user to filter data
     :param machine: machine selected to perform the computation on
     :param arepas: arepa type selected to perform the computation on
     :param br_df: batch registry dataframe
@@ -30,8 +33,12 @@ def filter_datasets(machine, arepas, br_df, cm_df, fi_df):
     list_of_batch_with_arepa_type_searched = br_arepa_filtered_df['batch_id'].values.tolist()
     logging.debug(f"List of batches considered: {list_of_batch_with_arepa_type_searched}")
     cm_batch_filtered_df = cm_df.loc[cm_df['batch_id'].isin(list_of_batch_with_arepa_type_searched)]
-    logging.debug(f"Filtered cooking metrics: \n{cm_batch_filtered_df.to_markdown()}")
-    return br_arepa_filtered_df, cm_batch_filtered_df, fi_usefull_machine_df
+    cm_timestamp_filtered_df = cm_batch_filtered_df.drop(cm_batch_filtered_df[(cm_df.timestamp <= start_timestamp)
+                                                                              | (cm_df.timestamp >= end_timestamp)]
+                                                         .index)
+
+    logging.debug(f"Filtered cooking metrics: \n{cm_timestamp_filtered_df.to_markdown()}")
+    return br_arepa_filtered_df, cm_timestamp_filtered_df, fi_usefull_machine_df
 
 
 def remove_faulty_intervals(cm_df, fi_df):
@@ -76,5 +83,3 @@ def save_output(output_path, output_df):
         output_df.to_csv(output_path)
     except RuntimeError as e:
         raise RuntimeError(f"Error writing csv file {output_path}, {e}")
-
-

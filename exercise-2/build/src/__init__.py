@@ -7,14 +7,14 @@ from logging import StreamHandler
 
 
 def arguments_validation(args):
-    args.start_timestamp = check_timestamp_value(args.start_timestamp)
-    args.end_timestamp = check_timestamp_value(args.end_timestamp)
-    return args
+    check_timestamp_value(args.start_timestamp)
+    check_timestamp_value(args.end_timestamp)
 
 
 def check_timestamp_value(string_datetime):
     try:
-        return datetime.strptime(string_datetime, "%Y-%m-%dT%H:%M:%S") if string_datetime else None
+        if string_datetime:
+            datetime.strptime(string_datetime, "%Y-%m-%dT%H:%M:%S")
     except ValueError:
         raise ValueError("Incorrect data format, inputs should be YYYY-MM-DDTHH:MM:SS")
 

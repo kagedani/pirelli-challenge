@@ -1,0 +1,18 @@
+FROM continuumio/miniconda3
+
+WORKDIR /app
+
+# Export the proxy as env variable
+ENV ENV=local
+ENV START_TIMESTAMP="2020-01-01T23:59:59"
+ENV END_TIMESTAMP="2022-01-01T23:59:59"
+
+# Create the environment:
+COPY ./environment.yml .
+RUN conda env update -f ./environment.yml -n base
+
+COPY build .
+
+
+# The code to run when container is started:
+CMD ["sh", "-c", "python main.py -s ${START_TIMESTAMP} -e ${END_TIMESTAMP}"]

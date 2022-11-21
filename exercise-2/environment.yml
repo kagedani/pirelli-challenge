@@ -1,0 +1,9 @@
+name: pirelli-data-challenge
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pandas
+  - tabulate
+  - numpy
+prefix: C:\Users\daniele.uboldi\miniconda3\envs\pirelli-data-challenge
