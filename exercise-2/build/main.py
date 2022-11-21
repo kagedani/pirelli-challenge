@@ -1,5 +1,6 @@
 import logging
 import argparse
+import pandas as pd
 from src import create_configurations, arguments_validation
 from src.services import utils
 
@@ -24,7 +25,19 @@ def main(config):
                                                             cooking_metrics_df,
                                                             faulty_intervals_df)
                 logging.info(f"[STEP]: Filtering dataframes for combination {kitchen}, {machine}, {arepas} - [RESULT]: COMPLETED")
+                logging.info(f"[STEP]: Removing data of faulty intervals - STARTED")
                 cm_df = utils.remove_faulty_intervals(cm_df, fi_df)
+                logging.info(f"[STEP]: Removing data of faulty intervals - [RESULT]: COMPLETED")
+                cm_df.timestamp = cm_df.timestamp.apply(pd.to_datetime)
+                cm_df['date'] = [ts.date() for ts in cm_df['timestamp']]
+                cm_df['time'] = [ts.time() for ts in cm_df['timestamp']]
+                cm_df['hour'] = [time.hour for time in cm_df['time']]
+                logging.debug(f"Date and time columns added to cooking metrics df: {cm_df}")
+                cm_df = utils.convert_metrics_column_to_numeric(config.METRICS_LIST, cm_df)
+                output_df = cm_df.groupby(["date", "hour"])[list(config.METRICS_LIST)].mean()
+                logging.info(f"[STEP]: Writing output file - STARTED")
+                utils.save_output(config.OUTPUT_FILE_PATH, output_df)
+                logging.info(f"[STEP]: Writing output file - [RESULT]: COMPLETED")
 
 
 if __name__ == "__main__":

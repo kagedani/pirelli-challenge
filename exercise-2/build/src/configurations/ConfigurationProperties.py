@@ -18,6 +18,8 @@ class DevelopmentConfig(BaseConfig):
         "k1": ["m1"],
         "m1": ["a1"]
     }
+    METRICS_LIST = ['metric_1', 'metric_2']
+    OUTPUT_FILE_PATH = "./src/resources/output/output.csv"
 
 
 class LocalTestingConfig(BaseConfig):
@@ -36,3 +38,5 @@ class LocalTestingConfig(BaseConfig):
         "k1": ["m1"],
         "m1": ["a1"]
     }
+    METRICS_LIST = ['metric_1', 'metric_2']
+    OUTPUT_FILE_PATH = "./src/resources/output/output.csv"
